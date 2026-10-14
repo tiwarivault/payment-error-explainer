@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Payment Error Explainer</title>
+<style>
+  :root{
+    --bg:#0f1220; --card:#171a2b; --muted:#9aa3b2; --text:#e9ecf3;
+    --accent:#5b8cff; --accent2:#22c55e; --border:#262b40; --chip:#1e2238;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px}
+  header h1{font-size:26px;margin:0 0 4px}
+  header p{color:var(--muted);margin:0 0 20px}
+  .badge{display:inline-block;background:var(--chip);color:var(--muted);font-size:12px;padding:3px 10px;border-radius:999px;margin-right:6px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input,textarea,select{width:100%;background:#0e1120;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;font-size:15px;font-family:inherit}
+  textarea{min-height:70px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:140px}
+  button{cursor:pointer;border:none;border-radius:10px;padding:11px 16px;font-size:15px;font-weight:600}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-ghost{background:var(--chip);color:var(--text);border:1px solid var(--border)}
+  .btn-ai{background:linear-gradient(90deg,#7c3aed,#5b8cff);color:#fff}
+  .result{border-left:4px solid var(--accent);background:#12152400;padding:4px 0 4px 14px;margin-top:8px}
+  .result h3{margin:6px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+  .pill.cust{background:#13351f;color:#4ade80}
+  .pill.merch{background:#3a2a12;color:#fbbf24}
+  .pill.psp{background:#2a1d3f;color:#c084fc}
+  .pill.unknown{background:#3a1515;color:#f87171}
+  .kv{margin:6px 0}
+  .kv b{color:var(--muted);font-weight:600;display:block;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+  details summary{cursor:pointer;color:var(--accent);font-size:14px;margin-top:6px}
+  .ai-box{white-space:pre-wrap;background:#0e1120;border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid #fff6;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:30px}
+  a{color:var(--accent)}
+  .err{color:var(--danger);font-size:13px;margin-top:8px}
+  .examples span{cursor:pointer;background:var(--chip);border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 9px;border-radius:999px;margin:3px 4px 0 0;display:inline-block}
+  .examples span:hover{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>⚡ AI Payment Error Explainer</h1>
+    <p>Enter a payment error code or message — get a plain-English explanation: whose side the issue is on and the likely fix.</p>
+    <span class="badge">Knowledge base</span><span class="badge">+ AI mode (Claude)</span>
+  </header>
+
+  <!-- INPUT -->
+  <div class="card">
+    <label for="q">Payment error code or message</label>
+    <textarea id="q" placeholder="e.g. 'Do not honour', 'insufficient funds', '41008', '3DS authentication failed', 'invalid VPA'"></textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="btn-primary" onclick="explain()">Explain</button>
+      <button class="btn-ghost" onclick="clearAll()">Clear</button>
+    </div>
+    <div class="examples" style="margin-top:12px">
+      <span onclick="setQ('Do not honour')">Do not honour</span>
+      <span onclick="setQ('insufficient funds')">insufficient funds</span>
+      <span onclick="setQ('3DS authentication failed')">3DS failed</span>
+      <span onclick="setQ('transaction timed out')">timeout</span>
+      <span onclick="setQ('invalid VPA')">invalid VPA</span>
+      <span onclick="setQ('signature mismatch')">signature mismatch</span>
+      <span onclick="setQ('card not supported')">card not supported</span>
+      <span onclick="setQ('risk / fraud declined')">risk declined</span>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="out"></div>
+
+  <!-- AI SETTINGS -->
+  <div class="card">
+    <details>
+      <summary>⚙️ AI mode settings (optional — use your own Claude API key)</summary>
+      <div style="margin-top:12px">
+        <label for="key">Anthropic API key (stored only in your browser)</label>
+        <input id="key" type="password" placeholder="sk-ant-..." oninput="saveKey()" />
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label for="model">Model</label>
+            <input id="model" value="claude-haiku-5-5" />
+          </div>
+        </div>
+        <p class="small muted" style="margin-top:8px">
+          Get a key at console.anthropic.com. The key stays in your browser (localStorage) and is sent only to Anthropic.
+          If you get a model error, update the model id to a current one from the Anthropic docs.
+        </p>
+      </div>
+    </details>
+  </div>
+
+  <footer>
+    Built by <b>Prashant Tiwari</b> · Payments + AI · demo portfolio project
+  </footer>
+</div>
+
+<script>
+/* ---------- 1) KNOWLEDGE BASE (generic, public payments knowledge) ----------
+   Each entry: keywords to match, the explanation, and whose side it usually is. */
+const KB = [
+  {k:["do not honour","do not honor","dnh","05"], side:"psp",
+   title:"Do Not Honour (DNH)", meaning:"The customer's bank declined the payment without a specific reason — usually a bank-side risk/limit decision.",
+   fix:"Customer should contact their bank or retry with another card/method. Merchant can't fix this."},
+  {k:["insufficient funds","51","low balance"], side:"cust",
+   title:"Insufficient Funds", meaning:"The customer's account/card did not have enough balance.",
+   fix:"Customer should add funds or use another payment method. Nothing to fix on merchant/gateway side."},
+  {k:["3ds","3d secure","authentication failed","otp failed","otp not entered"], side:"cust",
+   title:"3DS / Authentication Failed", meaning:"The card's 3D-Secure (OTP/biometric) step failed, wasn't completed, or timed out.",
+   fix:"Ask the customer to retry and complete the OTP promptly. Check the issuer isn't down; most cases are customer-side."},
+  {k:["timeout","timed out","no response","gateway timeout"], side:"psp",
+   title:"Transaction Timeout", meaning:"No final response was received in time from the bank/PSP — the transaction is often left 'pending'.",
+   fix:"Run a status/enquiry call before marking failed (money may be debited). Reconcile; auto-refund if captured but not confirmed."},
+  {k:["invalid vpa","vpa not found","upi id","collect expired"], side:"cust",
+   title:"Invalid / Expired UPI VPA", meaning:"The UPI ID was wrong, or the collect request expired before the customer approved it.",
+   fix:"Customer should re-check their UPI ID or approve the request faster. Offer UPI intent/QR as an alternative."},
+  {k:["signature mismatch","checksum","hash mismatch","invalid signature"], side:"merch",
+   title:"Signature / Checksum Mismatch", meaning:"The request/response signature didn't match — usually wrong key, salt, or payload tampering on the integration side.",
+   fix:"Merchant/integration should verify the secret key, hashing algorithm and exact field order. This is an integration bug, not a customer issue."},
+  {k:["card not supported","unsupported card","network not supported","diners not supported","amex not supported"], side:"merch",
+   title:"Card / Network Not Supported", meaning:"The card network (e.g. Diners/Amex) isn't enabled or routed correctly for this merchant/PSP.",
+   fix:"Merchant should enable the network with the PSP, or route it to a PSP that supports it. Often a configuration/provisioning gap."},
+  {k:["risk","fraud","velocity","declined by risk","blocked"], side:"psp",
+   title:"Risk / Fraud Decline", meaning:"The payment was blocked by the bank's or PSP's fraud/risk engine (unusual pattern, velocity, blacklist).",
+   fix:"Usually genuine risk control — customer may need to verify with their bank. Merchant can review risk rules if false positives recur."},
+  {k:["mid not active","mid not activated","41008","terminal not active","provisioning"], side:"merch",
+   title:"MID Not Activated / Provisioning Issue", meaning:"The merchant account (MID/terminal) isn't activated on the gateway/bank side — so ALL transactions fail.",
+   fix:"Merchant/PSP ops should activate the MID. If every transaction fails, suspect provisioning, not the customer."},
+  {k:["not eligible","eligibility","bnpl declined","pre-approved"], side:"cust",
+   title:"BNPL / EMI Not Eligible", meaning:"The lender's eligibility check rejected the customer (new user, limit, credit policy) — not a payment failure.",
+   fix:"Customer isn't approved for that credit option; show other payment methods. Merchant-side only if it's a cap/config error."},
+  {k:["expired card","card expired","54"], side:"cust",
+   title:"Expired Card", meaning:"The card's validity date has passed.",
+   fix:"Customer should use a valid card. Nothing to fix on merchant side."},
+  {k:["invalid card","incorrect card number","invalid cvv","14"], side:"cust",
+   title:"Invalid Card Details", meaning:"Wrong card number, CVV or expiry was entered.",
+   fix:"Customer should re-enter correct card details."},
+];
+
+const SIDE_LABEL = {cust:"Customer-side", merch:"Merchant / Integration-side", psp:"Bank / PSP-side", unknown:"Unclear"};
+const SIDE_CLASS = {cust:"cust", merch:"merch", psp:"psp", unknown:"unknown"};
+
+function setQ(t){ document.getElementById('q').value = t; explain(); }
+function clearAll(){ document.getElementById('q').value=''; document.getElementById('out').innerHTML=''; }
+
+/* ---------- 2) LOOKUP in knowledge base ---------- */
+function lookup(text){
+  const t = text.toLowerCase();
+  for(const e of KB){
+    if(e.k.some(kw => t.includes(kw))) return e;
+  }
+  return null;
+}
+
+/* ---------- 3) EXPLAIN (knowledge base first) ---------- */
+function explain(){
+  const q = document.getElementById('q').value.trim();
+  const out = document.getElementById('out');
+  if(!q){ out.innerHTML=''; return; }
+  const hit = lookup(q);
+  if(hit){
+    out.innerHTML = card(hit.title, hit.side, hit.meaning, hit.fix, q);
+  } else {
+    out.innerHTML = `
+    <div class="card">
+      <span class="pill unknown">Not in knowledge base</span>
+      <h3>No exact match for "${escapeHtml(q)}"</h3>
+      <p class="muted small">This code isn't in the built-in list. Use <b>AI mode</b> below for an explanation.</p>
+      <button class="btn-ai" onclick="askAI()"><span id="aibtn">🤖 Explain with AI (Claude)</span></button>
+      <div id="aiout"></div>
+    </div>`;
+  }
+}
+
+function card(title, side, meaning, fix, q){
+  return `
+  <div class="card">
+    <span class="pill ${SIDE_CLASS[side]}">${SIDE_LABEL[side]}</span>
+    <h3>${title}</h3>
+    <div class="kv"><b>What it means</b>${escapeHtml(meaning)}</div>
+    <div class="kv"><b>Likely fix</b>${escapeHtml(fix)}</div>
+    <details>
+      <summary>Want a deeper, AI-written explanation?</summary>
+      <button class="btn-ai" style="margin-top:10px" onclick="askAI()"><span id="aibtn">🤖 Explain with AI (Claude)</span></button>
+      <div id="aiout"></div>
+    </details>
+  </div>`;
+}
+
+/* ---------- 4) AI MODE (calls Anthropic API with user's key) ---------- */
+function saveKey(){ try{ localStorage.setItem('anthropic_key', document.getElementById('key').value); }catch(e){} }
+window.addEventListener('load', ()=>{ try{ const k=localStorage.getItem('anthropic_key'); if(k) document.getElementById('key').value=k; }catch(e){} });
+
+async function askAI(){
+  const q = document.getElementById('q').value.trim();
+  const key = document.getElementById('key').value.trim();
+  const model = document.getElementById('model').value.trim() || 'claude-haiku-5-5';
+  const aiout = document.getElementById('aiout');
+  const btn = document.getElementById('aibtn');
+  if(!q){ return; }
+  if(!key){ aiout.innerHTML = `<div class="err">Please add your Anthropic API key in "AI mode settings" above.</div>`; return; }
+
+  btn.innerHTML = `<span class="spinner"></span>Asking Claude...`;
+  aiout.innerHTML = '';
+
+  const prompt =
+`You are a senior payments support engineer. A merchant sees this payment error: "${q}".
+Explain in simple, practical terms:
+1) What it means
+2) Whose side the issue is usually on (customer / merchant-integration / bank-or-PSP)
+3) The typical fix / next step
+Keep it under 120 words, clear and non-jargony.`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'content-type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 400,
+        messages:[{role:'user', content: prompt}]
+      })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      aiout.innerHTML = `<div class="err">API error (${res.status}): ${escapeHtml((data.error&&data.error.message)||JSON.stringify(data))}</div>`;
+    } else {
+      const text = (data.content && data.content[0] && data.content[0].text) || 'No response.';
+      aiout.innerHTML = `<div class="ai-box">${escapeHtml(text)}</div>`;
+    }
+  }catch(err){
+    aiout.innerHTML = `<div class="err">Request failed: ${escapeHtml(err.message)}. (If it's a network/CORS error, check your key and model id.)</div>`;
+  }finally{
+    btn.innerHTML = `🤖 Explain with AI (Claude)`;
+  }
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>
