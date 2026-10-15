@@ -3,7 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AI Payment Error Explainer</title>
+<title>AI PSP Error Code Assistant</title>
+<meta name="description" content="Search 50+ payment error codes across cards, UPI, netbanking, wallets and EMI — see whose side the issue is on and the likely fix, with optional AI explanations." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://tiwarivault.github.io/payment-error-explainer/" />
+<meta property="og:title" content="AI PSP Error Code Assistant" />
+<meta property="og:description" content="Search 50+ payment error codes across cards, UPI, netbanking, wallets and EMI. Whose side the issue is on + the likely fix, with optional Claude AI explanations." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="AI PSP Error Code Assistant" />
+<meta name="twitter:description" content="Search 50+ payment error codes and get the likely fix, with optional AI explanations." />
 <style>
   :root{
     --bg:#0f1220; --card:#171a2b; --muted:#9aa3b2; --text:#e9ecf3;
@@ -12,9 +20,9 @@
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
-  .wrap{max-width:820px;margin:0 auto;padding:24px 16px 60px}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 16px 60px}
   header h1{font-size:26px;margin:0 0 4px}
-  header p{color:var(--muted);margin:0 0 20px}
+  header p{color:var(--muted);margin:0 0 16px}
   .badge{display:inline-block;background:var(--chip);color:var(--muted);font-size:12px;padding:3px 10px;border-radius:999px;margin-right:6px}
   .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -26,17 +34,21 @@
   .btn-primary{background:var(--accent);color:#fff}
   .btn-ghost{background:var(--chip);color:var(--text);border:1px solid var(--border)}
   .btn-ai{background:linear-gradient(90deg,#7c3aed,#5b8cff);color:#fff}
-  .result{border-left:4px solid var(--accent);background:#12152400;padding:4px 0 4px 14px;margin-top:8px}
-  .result h3{margin:6px 0}
-  .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;margin:0 6px 8px 0}
   .pill.cust{background:#13351f;color:#4ade80}
   .pill.merch{background:#3a2a12;color:#fbbf24}
   .pill.psp{background:#2a1d3f;color:#c084fc}
   .pill.unknown{background:#3a1515;color:#f87171}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;background:#0e1120;border:1px solid var(--border);color:var(--muted);margin:0 6px 8px 0}
   .kv{margin:6px 0}
   .kv b{color:var(--muted);font-weight:600;display:block;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
   .muted{color:var(--muted)}
   .small{font-size:13px}
+  .res-head{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 10px}
+  .res-head .count{color:var(--muted);font-size:13px}
+  .entry{border-left:3px solid var(--border);padding:2px 0 2px 14px;margin:14px 0}
+  .entry h3{margin:4px 0}
+  .entry .codes{font-size:12px;color:var(--muted);margin-top:4px}
   details summary{cursor:pointer;color:var(--accent);font-size:14px;margin-top:6px}
   .ai-box{white-space:pre-wrap;background:#0e1120;border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px}
   .spinner{display:inline-block;width:16px;height:16px;border:2px solid #fff6;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px}
@@ -44,39 +56,28 @@
   footer{color:var(--muted);font-size:13px;text-align:center;margin-top:30px}
   a{color:var(--accent)}
   .err{color:var(--danger);font-size:13px;margin-top:8px}
-  .examples span{cursor:pointer;background:var(--chip);border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 9px;border-radius:999px;margin:3px 4px 0 0;display:inline-block}
-  .examples span:hover{color:var(--text)}
+  .chips{margin:10px 0 2px}
+  .chips span{cursor:pointer;background:var(--chip);border:1px solid var(--border);color:var(--muted);font-size:13px;padding:6px 12px;border-radius:999px;margin:0 6px 8px 0;display:inline-block}
+  .chips span.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chips span:hover{color:var(--text)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>⚡ AI Payment Error Explainer</h1>
-    <p>Enter a payment error code or message — get a plain-English explanation: whose side the issue is on and the likely fix.</p>
-    <span class="badge">Knowledge base</span><span class="badge">+ AI mode (Claude)</span>
+    <h1>⚡ AI PSP Error Code Assistant</h1>
+    <p>Search any payment error code or message across cards, UPI, netbanking, wallets and EMI — get whose side the issue is on and the likely fix. 50+ codes built in, plus optional AI explanations.</p>
+    <span class="badge">50+ error codes</span><span class="badge">Instant search</span><span class="badge">+ AI mode (Claude)</span>
   </header>
 
-  <!-- INPUT -->
+  <!-- SEARCH -->
   <div class="card">
-    <label for="q">Payment error code or message</label>
-    <textarea id="q" placeholder="e.g. 'Do not honour', 'insufficient funds', '41008', '3DS authentication failed', 'invalid VPA'"></textarea>
-    <div class="row" style="margin-top:12px">
-      <button class="btn-primary" onclick="explain()">Explain</button>
-      <button class="btn-ghost" onclick="clearAll()">Clear</button>
-    </div>
-    <div class="examples" style="margin-top:12px">
-      <span onclick="setQ('Do not honour')">Do not honour</span>
-      <span onclick="setQ('insufficient funds')">insufficient funds</span>
-      <span onclick="setQ('3DS authentication failed')">3DS failed</span>
-      <span onclick="setQ('transaction timed out')">timeout</span>
-      <span onclick="setQ('invalid VPA')">invalid VPA</span>
-      <span onclick="setQ('signature mismatch')">signature mismatch</span>
-      <span onclick="setQ('card not supported')">card not supported</span>
-      <span onclick="setQ('risk / fraud declined')">risk declined</span>
-    </div>
+    <label for="q">Search an error code or message</label>
+    <input id="q" autocomplete="off" placeholder="e.g. 'Do not honour', '51', '3DS failed', 'invalid VPA', 'signature mismatch', 'MID not active'..." oninput="render()" />
+    <div class="chips" id="chips"></div>
   </div>
 
-  <!-- RESULT -->
+  <!-- RESULTS -->
   <div id="out"></div>
 
   <!-- AI SETTINGS -->
@@ -101,125 +102,287 @@
   </div>
 
   <footer>
-    Built by <b>Prashant Tiwari</b> · Payments + AI · demo portfolio project
+    Built by <b>Prashant Tiwari</b> · Payments + AI · demo portfolio project · generic public payments knowledge
   </footer>
 </div>
 
 <script>
-/* ---------- 1) KNOWLEDGE BASE (generic, public payments knowledge) ----------
-   Each entry: keywords to match, the explanation, and whose side it usually is. */
+/* ---------- KNOWLEDGE BASE — generic, public payments knowledge (no proprietary data) ----------
+   side: cust = customer, merch = merchant/integration, psp = bank/PSP.
+   cat:  Card | UPI | Netbanking | Wallet | EMI/BNPL | Integration | Provisioning | Risk | General */
 const KB = [
-  {k:["do not honour","do not honor","dnh","05"], side:"psp",
-   title:"Do Not Honour (DNH)", meaning:"The customer's bank declined the payment without a specific reason — usually a bank-side risk/limit decision.",
-   fix:"Customer should contact their bank or retry with another card/method. Merchant can't fix this."},
-  {k:["insufficient funds","51","low balance"], side:"cust",
-   title:"Insufficient Funds", meaning:"The customer's account/card did not have enough balance.",
-   fix:"Customer should add funds or use another payment method. Nothing to fix on merchant/gateway side."},
-  {k:["3ds","3d secure","authentication failed","otp failed","otp not entered"], side:"cust",
-   title:"3DS / Authentication Failed", meaning:"The card's 3D-Secure (OTP/biometric) step failed, wasn't completed, or timed out.",
-   fix:"Ask the customer to retry and complete the OTP promptly. Check the issuer isn't down; most cases are customer-side."},
-  {k:["timeout","timed out","no response","gateway timeout"], side:"psp",
-   title:"Transaction Timeout", meaning:"No final response was received in time from the bank/PSP — the transaction is often left 'pending'.",
-   fix:"Run a status/enquiry call before marking failed (money may be debited). Reconcile; auto-refund if captured but not confirmed."},
-  {k:["invalid vpa","vpa not found","upi id","collect expired"], side:"cust",
-   title:"Invalid / Expired UPI VPA", meaning:"The UPI ID was wrong, or the collect request expired before the customer approved it.",
-   fix:"Customer should re-check their UPI ID or approve the request faster. Offer UPI intent/QR as an alternative."},
-  {k:["signature mismatch","checksum","hash mismatch","invalid signature"], side:"merch",
-   title:"Signature / Checksum Mismatch", meaning:"The request/response signature didn't match — usually wrong key, salt, or payload tampering on the integration side.",
-   fix:"Merchant/integration should verify the secret key, hashing algorithm and exact field order. This is an integration bug, not a customer issue."},
-  {k:["card not supported","unsupported card","network not supported","diners not supported","amex not supported"], side:"merch",
-   title:"Card / Network Not Supported", meaning:"The card network (e.g. Diners/Amex) isn't enabled or routed correctly for this merchant/PSP.",
-   fix:"Merchant should enable the network with the PSP, or route it to a PSP that supports it. Often a configuration/provisioning gap."},
-  {k:["risk","fraud","velocity","declined by risk","blocked"], side:"psp",
-   title:"Risk / Fraud Decline", meaning:"The payment was blocked by the bank's or PSP's fraud/risk engine (unusual pattern, velocity, blacklist).",
-   fix:"Usually genuine risk control — customer may need to verify with their bank. Merchant can review risk rules if false positives recur."},
-  {k:["mid not active","mid not activated","41008","terminal not active","provisioning"], side:"merch",
-   title:"MID Not Activated / Provisioning Issue", meaning:"The merchant account (MID/terminal) isn't activated on the gateway/bank side — so ALL transactions fail.",
-   fix:"Merchant/PSP ops should activate the MID. If every transaction fails, suspect provisioning, not the customer."},
-  {k:["not eligible","eligibility","bnpl declined","pre-approved"], side:"cust",
-   title:"BNPL / EMI Not Eligible", meaning:"The lender's eligibility check rejected the customer (new user, limit, credit policy) — not a payment failure.",
-   fix:"Customer isn't approved for that credit option; show other payment methods. Merchant-side only if it's a cap/config error."},
-  {k:["expired card","card expired","54"], side:"cust",
-   title:"Expired Card", meaning:"The card's validity date has passed.",
-   fix:"Customer should use a valid card. Nothing to fix on merchant side."},
-  {k:["invalid card","incorrect card number","invalid cvv","14"], side:"cust",
-   title:"Invalid Card Details", meaning:"Wrong card number, CVV or expiry was entered.",
-   fix:"Customer should re-enter correct card details."},
+  // ---- CARD / ISSUER DECLINES ----
+  {k:["do not honour","do not honor","dnh","05"], side:"psp", cat:"Card", codes:"ISO 05",
+   title:"Do Not Honour (DNH)", meaning:"The card's issuing bank declined without a specific reason — usually a bank-side risk, limit or policy decision.",
+   fix:"Customer should contact their bank or retry with another card/method. Not fixable by the merchant."},
+  {k:["insufficient funds","51","low balance","not enough balance"], side:"cust", cat:"Card", codes:"ISO 51",
+   title:"Insufficient Funds", meaning:"The card/account did not have enough balance for the amount.",
+   fix:"Customer adds funds or uses another method. Nothing to fix merchant/gateway-side."},
+  {k:["expired card","card expired","54"], side:"cust", cat:"Card", codes:"ISO 54",
+   title:"Expired Card", meaning:"The card's validity date has already passed.",
+   fix:"Customer uses a valid, in-date card."},
+  {k:["invalid card","incorrect card number","14","invalid card number"], side:"cust", cat:"Card", codes:"ISO 14",
+   title:"Invalid Card Number", meaning:"The card number entered is wrong or fails the issuer's check.",
+   fix:"Customer re-enters the correct card number."},
+  {k:["invalid cvv","incorrect cvv","cvv","82","n7"], side:"cust", cat:"Card", codes:"ISO 82 / N7",
+   title:"Incorrect CVV", meaning:"The CVV/CVC security code didn't match the card.",
+   fix:"Customer re-enters the correct 3-digit CVV (4 digits for Amex)."},
+  {k:["incorrect pin","invalid pin","55","wrong pin"], side:"cust", cat:"Card", codes:"ISO 55",
+   title:"Incorrect PIN", meaning:"The card PIN entered was wrong.",
+   fix:"Customer retries with the correct PIN; repeated failures can block the card."},
+  {k:["restricted card","62","card restricted"], side:"psp", cat:"Card", codes:"ISO 62",
+   title:"Restricted Card", meaning:"The issuer restricts this card for this type of transaction (e.g. domestic-only, no e-commerce/international).",
+   fix:"Customer enables e-com/international use with their bank, or uses another card."},
+  {k:["lost card","stolen card","41","43","pickup card","04"], side:"psp", cat:"Card", codes:"ISO 41/43/04",
+   title:"Lost / Stolen / Pickup Card", meaning:"The issuer flagged the card as lost, stolen or to be retained.",
+   fix:"Customer must use a different card and contact their bank. Merchant cannot override."},
+  {k:["exceeds limit","61","exceeds withdrawal","amount limit","65","activity limit"], side:"psp", cat:"Card", codes:"ISO 61/65",
+   title:"Exceeds Amount / Activity Limit", meaning:"The transaction exceeds the card's per-transaction or daily spend/velocity limit.",
+   fix:"Customer lowers the amount, raises the limit with their bank, or uses another method."},
+  {k:["transaction not permitted","57","58","not allowed to cardholder"], side:"psp", cat:"Card", codes:"ISO 57/58",
+   title:"Transaction Not Permitted", meaning:"The issuer or terminal does not permit this transaction type on this card.",
+   fix:"Customer checks that online/card-not-present use is enabled, or uses another method."},
+  {k:["issuer unavailable","91","issuer down","bank down","issuer not available"], side:"psp", cat:"Card", codes:"ISO 91",
+   title:"Issuer Unavailable", meaning:"The card's bank could not be reached to authorise — an issuer-side outage or timeout.",
+   fix:"Customer retries after some time. Transient issuer downtime, not a merchant issue."},
+  {k:["card blocked","blocked card","hotlisted","card hotlist"], side:"psp", cat:"Card", codes:"Issuer",
+   title:"Card Blocked / Hotlisted", meaning:"The issuer has blocked the card (risk, non-payment, customer request).",
+   fix:"Customer contacts their bank; use another card meanwhile."},
+  {k:["suspected fraud","fraud","59","declined fraud"], side:"psp", cat:"Risk", codes:"ISO 59",
+   title:"Suspected Fraud (Issuer)", meaning:"The issuer's fraud engine declined the payment as suspicious.",
+   fix:"Customer may need to confirm the transaction with their bank, then retry."},
+
+  // ---- 3DS / AUTHENTICATION ----
+  {k:["3ds","3d secure","authentication failed","otp failed","otp not entered","auth failed"], side:"cust", cat:"Card", codes:"3DS",
+   title:"3DS / Authentication Failed", meaning:"The card's 3D-Secure (OTP/biometric) step failed, was abandoned or timed out.",
+   fix:"Customer retries and completes the OTP promptly. Check the issuer's ACS isn't down; most cases are customer-side."},
+  {k:["otp timeout","otp expired","authentication timeout","acs timeout"], side:"cust", cat:"Card", codes:"3DS",
+   title:"OTP / Authentication Timeout", meaning:"The OTP page or ACS session timed out before the customer completed it.",
+   fix:"Customer retries and enters the OTP quickly. Persistent timeouts can mean an issuer ACS outage."},
+  {k:["not enrolled","issuer not enrolled","authentication unavailable","3ds not available"], side:"psp", cat:"Card", codes:"3DS",
+   title:"3DS Not Available / Not Enrolled", meaning:"The card or issuer isn't enrolled for 3D-Secure, or authentication couldn't be performed.",
+   fix:"Depends on merchant policy — allow a frictionless/fallback flow or ask the customer to use another card."},
+
+  // ---- UPI ----
+  {k:["invalid vpa","vpa not found","upi id wrong","invalid upi"], side:"cust", cat:"UPI", codes:"UPI",
+   title:"Invalid / Not Found VPA", meaning:"The UPI ID (VPA) entered is wrong or doesn't exist.",
+   fix:"Customer re-checks their UPI ID, or uses UPI intent/QR instead of typing a VPA."},
+  {k:["collect expired","upi collect expired","request expired","collect timeout"], side:"cust", cat:"UPI", codes:"UPI",
+   title:"UPI Collect Expired", meaning:"The collect request expired before the customer approved it in their UPI app.",
+   fix:"Customer approves faster, or use UPI intent (app deep-link) / QR which is quicker."},
+  {k:["upi timeout","upi no response","upi pending","upi timed out"], side:"psp", cat:"UPI", codes:"UPI",
+   title:"UPI Timeout / Pending", meaning:"No final response came back from NPCI/PSP in time — status is often left pending.",
+   fix:"Run a status/enquiry before marking failed (money may be debited); reconcile and auto-refund if debited but not confirmed."},
+  {k:["upi declined","declined by bank upi","upi failure","transaction declined upi"], side:"psp", cat:"UPI", codes:"UPI",
+   title:"UPI Declined by Bank", meaning:"The customer's bank declined the UPI debit (risk, limit, account status).",
+   fix:"Customer retries or uses another bank account/method. Bank-side decision."},
+  {k:["upi insufficient","insufficient balance upi","u30"], side:"cust", cat:"UPI", codes:"UPI U30",
+   title:"UPI Insufficient Balance", meaning:"The linked bank account didn't have enough balance.",
+   fix:"Customer adds funds or pays from another account/method."},
+  {k:["upi risk","upi fraud","upi velocity","upi blocked"], side:"psp", cat:"Risk", codes:"UPI",
+   title:"UPI Risk / Velocity Decline", meaning:"The bank or UPI risk engine blocked the payment (new payee, velocity, suspicious pattern).",
+   fix:"Customer may need to confirm with their bank or wait out a cool-down; usually genuine risk control."},
+  {k:["upi app not installed","no upi app","intent failed"], side:"cust", cat:"UPI", codes:"UPI",
+   title:"No UPI App / Intent Failed", meaning:"The chosen UPI app isn't installed, or the intent deep-link couldn't open it.",
+   fix:"Customer installs the app or picks another UPI app; offer QR/collect as a fallback."},
+
+  // ---- NETBANKING ----
+  {k:["bank page down","netbanking down","bank site down","nb down"], side:"psp", cat:"Netbanking", codes:"NB",
+   title:"Netbanking Page / Bank Down", meaning:"The bank's netbanking page was unreachable or erroring during the payment.",
+   fix:"Customer retries later or uses another bank/method. Bank-side outage."},
+  {k:["session expired","netbanking session","session timeout nb"], side:"cust", cat:"Netbanking", codes:"NB",
+   title:"Netbanking Session Expired", meaning:"The bank login session timed out before the payment completed.",
+   fix:"Customer restarts the payment and completes it without long pauses."},
+  {k:["user cancelled","cancelled by user","customer cancelled","abandoned"], side:"cust", cat:"Netbanking", codes:"NB",
+   title:"Cancelled / Abandoned by Customer", meaning:"The customer left or cancelled on the bank/PSP page before finishing.",
+   fix:"No fix needed — it's a drop-off. Consider a simpler/faster checkout to reduce abandonment."},
+  {k:["bank timeout","nb timeout","netbanking timeout","bank no response"], side:"psp", cat:"Netbanking", codes:"NB",
+   title:"Netbanking Timeout", meaning:"No final response from the bank in time; the transaction may be left pending.",
+   fix:"Run a status enquiry before marking failed; reconcile and refund if debited."},
+  {k:["invalid bank code","bank not supported","unsupported bank"], side:"merch", cat:"Netbanking", codes:"NB",
+   title:"Bank Code Invalid / Not Supported", meaning:"The selected bank isn't enabled/mapped correctly for this merchant or PSP route.",
+   fix:"Merchant/PSP ops enables or corrects the bank-code mapping, or routes to a PSP that supports it."},
+
+  // ---- WALLET ----
+  {k:["wallet insufficient","wallet low balance","insufficient wallet"], side:"cust", cat:"Wallet", codes:"Wallet",
+   title:"Insufficient Wallet Balance", meaning:"The wallet didn't have enough balance for the amount.",
+   fix:"Customer tops up the wallet or uses another method."},
+  {k:["wallet not linked","wallet not activated","wallet kyc"], side:"cust", cat:"Wallet", codes:"Wallet",
+   title:"Wallet Not Linked / KYC Pending", meaning:"The wallet isn't linked/activated or needs KYC to transact.",
+   fix:"Customer completes wallet KYC/linking, or uses another method."},
+
+  // ---- EMI / BNPL ----
+  {k:["not eligible","eligibility","bnpl declined","pre-approved","not eligible for emi"], side:"cust", cat:"EMI/BNPL", codes:"BNPL",
+   title:"EMI / BNPL Not Eligible", meaning:"The lender's eligibility check rejected the customer (new user, limit, credit policy) — not a payment debit failure.",
+   fix:"Show other methods. Merchant-side only if it's a cap/config error (e.g. sub-merchant limit reached)."},
+  {k:["emi not supported","card not emi","no emi on card"], side:"cust", cat:"EMI/BNPL", codes:"EMI",
+   title:"EMI Not Supported on Card", meaning:"The card/bank isn't eligible for EMI on this amount or tenure.",
+   fix:"Customer uses an EMI-eligible card or a different tenure; otherwise pay in full."},
+  {k:["bnpl limit","credit limit reached","cap reached","submerchant cap"], side:"merch", cat:"EMI/BNPL", codes:"BNPL",
+   title:"BNPL Limit / Cap Reached", meaning:"A lender or sub-merchant transaction cap/limit was hit.",
+   fix:"Merchant raises the cap with the lender/PSP, or offers other methods meanwhile."},
+
+  // ---- INTEGRATION / MERCHANT ----
+  {k:["signature mismatch","checksum","hash mismatch","invalid signature","invalid checksum"], side:"merch", cat:"Integration", codes:"Integration",
+   title:"Signature / Checksum Mismatch", meaning:"The request/response signature didn't match — usually wrong key, salt, hashing algo or field order.",
+   fix:"Verify the secret key, hashing algorithm and exact payload/field order. This is an integration bug, not a customer issue."},
+  {k:["invalid api key","invalid key","unauthorized","401","authentication failed api","invalid credentials"], side:"merch", cat:"Integration", codes:"HTTP 401",
+   title:"Invalid API Key / Unauthorized", meaning:"The API key/credentials are wrong, revoked, or using the wrong environment (test vs live).",
+   fix:"Use the correct live/test key for the right environment; rotate if leaked."},
+  {k:["invalid amount","amount mismatch","zero amount","amount too low"], side:"merch", cat:"Integration", codes:"Integration",
+   title:"Invalid Amount", meaning:"The amount is missing, zero, negative, below the minimum, or in the wrong unit (rupees vs paise).",
+   fix:"Send a valid amount in the exact unit the gateway expects; validate before the call."},
+  {k:["duplicate order","duplicate order id","order already exists","duplicate transaction"], side:"merch", cat:"Integration", codes:"Integration",
+   title:"Duplicate Order ID", meaning:"An order/transaction ID was reused — gateways require unique IDs per attempt.",
+   fix:"Generate a unique order/reference ID for every create call."},
+  {k:["invalid merchant","invalid merchant id","merchant not found","invalid mid"], side:"merch", cat:"Integration", codes:"Integration",
+   title:"Invalid Merchant ID", meaning:"The merchant/sub-merchant ID in the request isn't recognised or is mistyped.",
+   fix:"Send the correct merchant/sub-merchant ID for the right environment and PSP."},
+  {k:["missing field","mandatory field","required field","missing parameter","bad request","400"], side:"merch", cat:"Integration", codes:"HTTP 400",
+   title:"Missing Mandatory Field", meaning:"A required field is absent or malformed in the request payload.",
+   fix:"Add/fix the missing field per the API docs; validate the payload before sending."},
+  {k:["unsupported currency","invalid currency","currency not allowed"], side:"merch", cat:"Integration", codes:"Integration",
+   title:"Unsupported Currency", meaning:"The currency isn't enabled for this merchant/PSP or isn't supported for the method.",
+   fix:"Enable the currency with the PSP, or send a supported currency."},
+  {k:["invalid request","malformed","parse error","json error","schema"], side:"merch", cat:"Integration", codes:"Integration",
+   title:"Invalid / Malformed Request", meaning:"The request body couldn't be parsed or failed schema validation.",
+   fix:"Fix JSON structure, content-type and field types per the API spec."},
+  {k:["rate limit","too many requests","429","throttled"], side:"merch", cat:"Integration", codes:"HTTP 429",
+   title:"Rate Limited", meaning:"Too many requests in a short window — the gateway throttled the caller.",
+   fix:"Add retry-with-backoff and reduce call frequency; batch where possible."},
+
+  // ---- PROVISIONING ----
+  {k:["mid not active","mid not activated","41008","terminal not active","provisioning","mid inactive"], side:"merch", cat:"Provisioning", codes:"Provisioning",
+   title:"MID Not Activated / Provisioning", meaning:"The merchant account (MID/terminal) isn't activated on the gateway/bank side — so ALL transactions fail.",
+   fix:"Merchant/PSP ops activates the MID. If every transaction fails, suspect provisioning, not the customer."},
+  {k:["card not supported","unsupported card","network not supported","diners not supported","amex not supported","network not enabled"], side:"merch", cat:"Provisioning", codes:"Provisioning",
+   title:"Card Network Not Enabled", meaning:"The card network (e.g. Diners/Amex) isn't enabled or routed correctly for this merchant/PSP.",
+   fix:"Enable the network with the PSP, or route it to a PSP that supports it. Often a config/provisioning gap."},
+  {k:["mode not enabled","method not enabled","payment mode disabled","mode disabled"], side:"merch", cat:"Provisioning", codes:"Provisioning",
+   title:"Payment Mode Not Enabled", meaning:"The payment method (UPI/NB/wallet/EMI) isn't enabled for this merchant/sub-merchant.",
+   fix:"Enable the mode in the merchant config with the PSP."},
+  {k:["no payment partner","no partner found","unavailable payment config","routing not found"], side:"merch", cat:"Provisioning", codes:"Provisioning",
+   title:"No Payment Partner / Config Found", meaning:"No PSP route is configured for this method+merchant combination.",
+   fix:"Map a PSP/route for that method; expected if a merchant is intentionally enabled for only some modes."},
+
+  // ---- RISK ----
+  {k:["risk declined","declined by risk","blocked by risk","risk engine"], side:"psp", cat:"Risk", codes:"Risk",
+   title:"Risk / Fraud Decline (Gateway)", meaning:"The PSP's fraud/risk engine blocked the payment (unusual pattern, velocity, blacklist).",
+   fix:"Usually genuine risk control. Merchant can review risk rules if false positives recur."},
+  {k:["velocity","too many attempts","velocity breached","rapid attempts"], side:"psp", cat:"Risk", codes:"Risk",
+   title:"Velocity Breached", meaning:"Too many attempts from the same card/user/IP in a short time triggered a velocity rule.",
+   fix:"Customer waits out the cool-down. Merchant tunes velocity thresholds if legit users are hit."},
+  {k:["blacklist","blacklisted","denylist","negative list"], side:"psp", cat:"Risk", codes:"Risk",
+   title:"Blacklisted", meaning:"The card/customer/IP is on a deny/negative list at the bank or PSP.",
+   fix:"Genuine block — customer uses another instrument or contacts their bank."},
+
+  // ---- GENERAL / PSP ----
+  {k:["transaction timeout","timed out","no response","gateway timeout","504"], side:"psp", cat:"General", codes:"Timeout",
+   title:"Transaction Timeout", meaning:"No final response was received in time from the bank/PSP — often left pending.",
+   fix:"Run a status/enquiry before marking failed (money may be debited); reconcile and auto-refund if captured but unconfirmed."},
+  {k:["transaction not found","txn not found","order not found","not found"], side:"psp", cat:"General", codes:"PSP",
+   title:"Transaction Not Found", meaning:"The PSP has no record of the transaction being asked about (never reached it, or wrong reference/route).",
+   fix:"Check the reference ID and that the request actually reached the PSP; verify routing/method support."},
+  {k:["gateway error","internal server error","500","psp error","something went wrong"], side:"psp", cat:"General", codes:"HTTP 500",
+   title:"Gateway / Internal Error", meaning:"The PSP returned a generic server error — a transient fault on their side.",
+   fix:"Retry after a short delay; if persistent, raise with the PSP with the request/reference ID."},
+  {k:["psp down","gateway down","service unavailable","503"], side:"psp", cat:"General", codes:"HTTP 503",
+   title:"PSP / Gateway Down", meaning:"The payment service was temporarily unavailable.",
+   fix:"Retry later or fail over to another PSP route if available."},
+  {k:["refund failed","refund declined","refund error"], side:"psp", cat:"General", codes:"Refund",
+   title:"Refund Failed", meaning:"The refund couldn't be processed (insufficient merchant balance, source txn state, or PSP issue).",
+   fix:"Check the original transaction is captured/settled and the merchant has balance; retry or raise with the PSP."},
+  {k:["currency conversion","dcc","forex declined"], side:"psp", cat:"General", codes:"General",
+   title:"Currency Conversion / Forex Decline", meaning:"The issuer declined the cross-currency/international transaction or DCC step.",
+   fix:"Customer enables international use with their bank, or pays in the base currency."},
 ];
 
 const SIDE_LABEL = {cust:"Customer-side", merch:"Merchant / Integration-side", psp:"Bank / PSP-side", unknown:"Unclear"};
 const SIDE_CLASS = {cust:"cust", merch:"merch", psp:"psp", unknown:"unknown"};
+const CATS = ["All","Card","UPI","Netbanking","Wallet","EMI/BNPL","Integration","Provisioning","Risk","General"];
 
-function setQ(t){ document.getElementById('q').value = t; explain(); }
-function clearAll(){ document.getElementById('q').value=''; document.getElementById('out').innerHTML=''; }
+let activeCat = "All";
 
-/* ---------- 2) LOOKUP in knowledge base ---------- */
-function lookup(text){
-  const t = text.toLowerCase();
-  for(const e of KB){
-    if(e.k.some(kw => t.includes(kw))) return e;
-  }
-  return null;
+/* ---------- CHIPS ---------- */
+function buildChips(){
+  const c = document.getElementById('chips');
+  c.innerHTML = CATS.map(cat =>
+    `<span class="${cat===activeCat?'active':''}" onclick="setCat('${cat.replace(/'/g,"\\'")}')">${cat}</span>`
+  ).join('');
+}
+function setCat(cat){ activeCat = cat; buildChips(); render(); }
+
+/* ---------- SEARCH + RENDER ---------- */
+function matches(e, t){
+  if(!t) return true;
+  const hay = (e.title+' '+e.meaning+' '+e.fix+' '+e.codes+' '+e.k.join(' ')).toLowerCase();
+  return t.split(/\s+/).every(w => hay.includes(w));
 }
 
-/* ---------- 3) EXPLAIN (knowledge base first) ---------- */
-function explain(){
-  const q = document.getElementById('q').value.trim();
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
   const out = document.getElementById('out');
-  if(!q){ out.innerHTML=''; return; }
-  const hit = lookup(q);
-  if(hit){
-    out.innerHTML = card(hit.title, hit.side, hit.meaning, hit.fix, q);
-  } else {
+  let list = KB.filter(e => (activeCat==="All" || e.cat===activeCat) && matches(e, q));
+
+  let head = `<div class="res-head"><div><b>${list.length}</b> <span class="count">result${list.length===1?'':'s'}${activeCat==="All"?'':' in '+activeCat}${q?` for "${escapeHtml(q)}"`:''}</span></div></div>`;
+
+  if(list.length === 0){
     out.innerHTML = `
     <div class="card">
-      <span class="pill unknown">Not in knowledge base</span>
-      <h3>No exact match for "${escapeHtml(q)}"</h3>
-      <p class="muted small">This code isn't in the built-in list. Use <b>AI mode</b> below for an explanation.</p>
-      <button class="btn-ai" onclick="askAI()"><span id="aibtn">🤖 Explain with AI (Claude)</span></button>
-      <div id="aiout"></div>
+      <span class="pill unknown">No match in knowledge base</span>
+      <h3>No built-in entry for "${escapeHtml(q)}"</h3>
+      <p class="muted small">This code isn't in the 50+ list. Use <b>AI mode</b> for an explanation (add your Claude key in settings below).</p>
+      <button class="btn-ai" onclick="askAI('${escapeAttr(q)}','aiout_x')"><span id="aibtn_x">🤖 Explain with AI (Claude)</span></button>
+      <div id="aiout_x"></div>
     </div>`;
+    return;
   }
+
+  const cards = list.map((e, i) => {
+    const id = 'e'+i;
+    return `
+    <div class="entry">
+      <span class="pill ${SIDE_CLASS[e.side]}">${SIDE_LABEL[e.side]}</span>
+      <span class="tag">${e.cat}</span>
+      <span class="tag">${escapeHtml(e.codes)}</span>
+      <h3>${escapeHtml(e.title)}</h3>
+      <div class="kv"><b>What it means</b>${escapeHtml(e.meaning)}</div>
+      <div class="kv"><b>Likely fix</b>${escapeHtml(e.fix)}</div>
+      <details>
+        <summary>Deeper AI explanation</summary>
+        <button class="btn-ai" style="margin-top:10px" onclick="askAI('${escapeAttr(e.title)}','aiout_${id}')"><span id="aibtn_${id}">🤖 Explain with AI (Claude)</span></button>
+        <div id="aiout_${id}"></div>
+      </details>
+    </div>`;
+  }).join('');
+
+  out.innerHTML = `<div class="card">${head}${cards}</div>`;
 }
 
-function card(title, side, meaning, fix, q){
-  return `
-  <div class="card">
-    <span class="pill ${SIDE_CLASS[side]}">${SIDE_LABEL[side]}</span>
-    <h3>${title}</h3>
-    <div class="kv"><b>What it means</b>${escapeHtml(meaning)}</div>
-    <div class="kv"><b>Likely fix</b>${escapeHtml(fix)}</div>
-    <details>
-      <summary>Want a deeper, AI-written explanation?</summary>
-      <button class="btn-ai" style="margin-top:10px" onclick="askAI()"><span id="aibtn">🤖 Explain with AI (Claude)</span></button>
-      <div id="aiout"></div>
-    </details>
-  </div>`;
-}
-
-/* ---------- 4) AI MODE (calls Anthropic API with user's key) ---------- */
+/* ---------- AI MODE ---------- */
 function saveKey(){ try{ localStorage.setItem('anthropic_key', document.getElementById('key').value); }catch(e){} }
-window.addEventListener('load', ()=>{ try{ const k=localStorage.getItem('anthropic_key'); if(k) document.getElementById('key').value=k; }catch(e){} });
+window.addEventListener('load', ()=>{
+  try{ const k=localStorage.getItem('anthropic_key'); if(k) document.getElementById('key').value=k; }catch(e){}
+  buildChips(); render();
+});
 
-async function askAI(){
-  const q = document.getElementById('q').value.trim();
+async function askAI(query, outId){
   const key = document.getElementById('key').value.trim();
   const model = document.getElementById('model').value.trim() || 'claude-haiku-5-5';
-  const aiout = document.getElementById('aiout');
-  const btn = document.getElementById('aibtn');
-  if(!q){ return; }
-  if(!key){ aiout.innerHTML = `<div class="err">Please add your Anthropic API key in "AI mode settings" above.</div>`; return; }
+  const aiout = document.getElementById(outId);
+  if(!aiout) return;
+  if(!query){ return; }
+  if(!key){ aiout.innerHTML = `<div class="err">Please add your Anthropic API key in "AI mode settings" below.</div>`; return; }
 
-  btn.innerHTML = `<span class="spinner"></span>Asking Claude...`;
-  aiout.innerHTML = '';
+  aiout.innerHTML = `<div class="ai-box"><span class="spinner"></span>Asking Claude...</div>`;
 
   const prompt =
-`You are a senior payments support engineer. A merchant sees this payment error: "${q}".
+`You are a senior payments support engineer. A merchant sees this payment error: "${query}".
 Explain in simple, practical terms:
 1) What it means
 2) Whose side the issue is usually on (customer / merchant-integration / bank-or-PSP)
 3) The typical fix / next step
-Keep it under 120 words, clear and non-jargony.`;
+Keep it under 130 words, clear and non-jargony.`;
 
   try{
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -230,11 +393,7 @@ Keep it under 120 words, clear and non-jargony.`;
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access':'true'
       },
-      body: JSON.stringify({
-        model: model,
-        max_tokens: 400,
-        messages:[{role:'user', content: prompt}]
-      })
+      body: JSON.stringify({ model: model, max_tokens: 400, messages:[{role:'user', content: prompt}] })
     });
     const data = await res.json();
     if(!res.ok){
@@ -245,12 +404,11 @@ Keep it under 120 words, clear and non-jargony.`;
     }
   }catch(err){
     aiout.innerHTML = `<div class="err">Request failed: ${escapeHtml(err.message)}. (If it's a network/CORS error, check your key and model id.)</div>`;
-  }finally{
-    btn.innerHTML = `🤖 Explain with AI (Claude)`;
   }
 }
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>
