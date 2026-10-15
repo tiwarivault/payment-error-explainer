@@ -60,6 +60,9 @@
   .chips span{cursor:pointer;background:var(--chip);border:1px solid var(--border);color:var(--muted);font-size:13px;padding:6px 12px;border-radius:999px;margin:0 6px 8px 0;display:inline-block}
   .chips span.active{background:var(--accent);border-color:var(--accent);color:#fff}
   .chips span:hover{color:var(--text)}
+  .example-ai{background:#161033;border:1px solid #3a2a6a;border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .example-ai .xtag{display:inline-block;background:#2a1d5a;color:#c084fc;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+  .example-ai p{margin:6px 0;font-size:14px} .example-ai .note{color:var(--muted);font-size:12px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -356,7 +359,14 @@ function render(){
     </div>`;
   }).join('');
 
-  out.innerHTML = `<div class="card">${head}${cards}</div>`;
+  const exampleBox = !q ? `
+    <div class="example-ai">
+      <span class="xtag">🤖 Example AI explanation — "Do not honour"</span>
+      <p>"Do not honour" (ISO 05) is a blanket decline from the customer's issuing bank — the bank won't say why. It's almost always bank-side, not something the merchant broke. Typical real reasons: the bank's risk/fraud rules, online or international use disabled on the card, or a soft spend limit.</p>
+      <p><b>What to do:</b> ask the customer to retry with another card/method or to get their bank to approve it. If you see it spike across many customers on one card network or BIN range, raise a routing/MCC check with your PSP/acquirer. You can't "fix" an individual DNH — but smart-routing a retry to an alternate acquirer recovers a share.</p>
+      <p class="note">This is what AI mode returns for a code — a deeper, plain-English explanation beyond the one-line fix. Search any code above, then open "Deeper AI explanation" with your own Claude key for live answers.</p>
+    </div>` : '';
+  out.innerHTML = exampleBox + `<div class="card">${head}${cards}</div>`;
 }
 
 /* ---------- AI MODE ---------- */
